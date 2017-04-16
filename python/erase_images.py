@@ -4,10 +4,8 @@ import sys
 import argparse
 
 INPUT_DIR = 'images'
-ROOT_DIR = '..'
 
-def erase(image_folder_dir):
-	root_dir = os.path.abspath(os.path.join(os.getcwd(), ROOT_DIR))
+def erase(image_folder_dir, root_dir):
 	image_folder_dir = os.path.join(root_dir, image_folder_dir)
 
 	if os.path.exists(image_folder_dir):
