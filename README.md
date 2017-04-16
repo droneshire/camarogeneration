@@ -30,6 +30,7 @@ To Parse Images from CSV File List:
 	      of the file placed into the image_lists folder in step 1
 	NOTE: if you want to upload via FTP, use the -u option at the end of the
 		  command (i.e. python scrape_images.py -f name_of_image_list_file.csv -u)
+        NOTE: if you want to erase the images after copying them, add the '-e' flag (i.e. python scrape_images.py -f name_of_image_list_file.csv -e)
 
 5) The correct images will be copied into the C:\Users\Erika\Dropbox\camarogeneration\parsed_images folder.  All images will be erased from the C:\Users\Erika\Dropbox\camarogeneration\images folder once the correct ones have been copied.
 
