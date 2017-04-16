@@ -1,7 +1,7 @@
 # camarogeneration
 File management
 
-To Reorder a CSV File:
+## To Reorder a CSV File:
 1) Open master_product_list.csv
 
 2) On a new line, type in the filename of the list you want to reorder
@@ -16,7 +16,7 @@ To Reorder a CSV File:
 
 5) The reordered csv file will be placed into the C:\Users\Erika\Dropbox\camarogeneration\converted_csvs\ folder with the same name as the input file only with a timestamp added to it. E.g. if input filename was input.csv, the output will be input_4_15_2017_16_53.csv
 
-To Parse Images from CSV File List:
+## To Parse Images from CSV File List:
 1) Create an image csv file. This needs to have a column in it with "Image File Names"
 
 2) Place image csv file into the C:\Users\Erika\Dropbox\camarogeneration\image_lists folder
@@ -34,8 +34,12 @@ To Parse Images from CSV File List:
 
 5) The correct images will be copied into the C:\Users\Erika\Dropbox\camarogeneration\parsed_images folder.  All images will be erased from the C:\Users\Erika\Dropbox\camarogeneration\images folder once the correct ones have been copied.
 
-To erase images after they are copied using scrape_images.py:
+## To erase images after they are copied using scrape_images.py:
 1) Run the following in the command line:
 		cd C:\Users\Erika\Dropbox\camarogeneration\python
 		python erase_images.py
-WARNING: Make sure you use this erase script only AFTER you have copied over all files!
+	WARNING: Make sure you use this erase script only AFTER you have copied over all files!
+OR
+2) Run scrape_images.py with the erase flag '-e'
+                i.e. python scrape_images.py -f name_of_image_list_file.csv -e
+
