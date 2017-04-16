@@ -6,12 +6,12 @@ import argparse
 INPUT_DIR = 'images'
 ROOT_DIR = '..'
 
-def run(image_folder_dir):
+def erase(image_folder_dir):
 	root_dir = os.path.abspath(os.path.join(os.getcwd(), ROOT_DIR))
 	image_folder_dir = os.path.join(root_dir, image_folder_dir)
 
 	if os.path.exists(image_folder_dir):
-		print 'Erasing unused images...'
+		print 'Erasing images in {}...'.format(image_folder_dir)
 		for imgfile in os.listdir(image_folder_dir):
 			img = os.path.join(image_folder_dir, imgfile)
 			os.remove(img)
@@ -26,4 +26,4 @@ if __name__ == "__main__":
 						default=[INPUT_DIR])
 	args = parser.parse_args()
 
-	run(args.input_dir[0])
+	erase(args.input_dir[0])

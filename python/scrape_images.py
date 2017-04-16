@@ -9,6 +9,8 @@ from shutil import copyfile
 import urllib
 import ftplib
 
+import erase_images
+
 ROOT_DIR = '..'
 OUTPUT_DIR = 'parsed_images'
 INPUT_DIR = 'images'
@@ -41,7 +43,7 @@ def get_images(root_dir, csvfile):
 		print 'ERROR: Could not open {}'.format(infile)
 		sys.exit(1)
 
-def run(input_filename, image_folder_dir=INPUT_DIR, upload_via_ftp=False):
+def run(input_filename, image_folder_dir=INPUT_DIR, upload_via_ftp=False, erase_imgs=False):
 	root_dir = os.path.abspath(os.path.join(os.getcwd(), ROOT_DIR))
 	image_folder_dir = os.path.join(root_dir, image_folder_dir)
 	i = datetime.datetime.now()
@@ -97,6 +99,8 @@ def run(input_filename, image_folder_dir=INPUT_DIR, upload_via_ftp=False):
 		print 'Could not find the following images:\n{}'.format(', '.join(missing))
 
 		print 'Found {} images'.format(img_found)
+		if erase_imgs:
+			erase_images.erase(image_folder_dir)
 	else:
 		print 'ERROR: Image search directory does not exist!'
 		sys.exit(1)
@@ -110,6 +114,8 @@ if __name__ == "__main__":
 						default=[INPUT_DIR])
 	parser.add_argument('-u', '--upload_via_ftp', help='Upload images via ftp',
 						action='store_true')
+	parser.add_argument('-e', '--erase', help='Erase image folder after copy',
+						action='store_true')
 	args = parser.parse_args()
 
-	run(args.input_filename[0], args.input_dir[0], args.upload_via_ftp)
+	run(args.input_filename[0], args.input_dir[0], args.upload_via_ftp, args.erase)
