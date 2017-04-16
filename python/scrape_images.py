@@ -3,14 +3,24 @@ import os
 import sys
 import argparse
 import datetime
+import csv
 from shutil import copyfile
 
+import urllib
+import ftplib
+
+ROOT_DIR = '..'
 OUTPUT_DIR = 'parsed_images'
 INPUT_DIR = 'images'
+
 IMG_LIST_DIR = 'image_lists'
 IMG_EXTENSION = '.jpg'
-ROOT_DIR = '..'
 IMAGE_COLUMN_NAME = 'Image File Names'
+
+FTP_SERVER_ADDR = 'ftp.debian.org'
+FTP_USERNAME = 'anonymous'
+FTP_PASSWORD = 'anonymous@'
+FTP_CMD = 'STOR '
 
 def get_images(root_dir, csvfile):
 	infile = os.path.join(root_dir, IMG_LIST_DIR, csvfile)
@@ -30,11 +40,10 @@ def get_images(root_dir, csvfile):
 		f.close()
 		return images
 	except:
-		print 'ERROR: Could not open {} or create {}'.format(
-				input_filename, output_filename)
+		print 'ERROR: Could not open {}'.format(infile)
 		sys.exit(1)
 
-def run(input_filename, image_folder_dir):
+def run(input_filename, image_folder_dir=INPUT_DIR, upload_via_ftp=False):
 	root_dir = os.path.abspath(os.path.join(os.getcwd(), ROOT_DIR))
 	image_folder_dir = os.path.join(root_dir, image_folder_dir)
 	i = datetime.datetime.now()
@@ -60,6 +69,14 @@ def run(input_filename, image_folder_dir):
 	missing = []
 
 	if os.path.exists(image_folder_dir):
+		if upload_via_ftp:
+			try:
+				session = ftplib.FTP(FTP_SERVER_ADDR, FTP_USERNAME, FTP_PASSWORD)
+			except:
+				print 'Could not connect to {}@{}'.format(
+						FTP_USERNAME, FTP_SERVER_ADDR)
+				sys.exit(1)
+			print 'Connected to {}'.format(FTP_SERVER_ADDR)
 		for i in image_list:
 			src = os.path.join(image_folder_dir, i)
 			dst = os.path.join(out_dir, i)
@@ -67,8 +84,15 @@ def run(input_filename, image_folder_dir):
 				copyfile(src, dst)
 				print 'Found image {}...'.format(i)
 				img_found += 1
+				if upload_via_ftp:
+					f = open(src, 'rb')
+					command = FTP_CMD + src
+					session.storbinary(command, f)
+					f.close()
 			else:
 				missing.append(i)
+		if upload_via_ftp:
+			session.quit()
 
 		print 'Could not find the following images:\n{}'.format(', '.join(missing))
 
@@ -84,6 +108,8 @@ if __name__ == "__main__":
 	parser.add_argument('-d', '--input_dir', nargs=1,
 						help='Directory of images to sort through',
 						default=[INPUT_DIR])
+	parser.add_argument('-u', '--upload_via_ftp', help='Upload images via ftp',
+						action='store_true')
 	args = parser.parse_args()
 
-	run(args.input_filename[0], args.input_dir[0])
+	run(args.input_filename[0], args.input_dir[0], args.upload_via_ftp)
