@@ -1,0 +1,4 @@
+*.jpg
+images
+converted_csvs
+parsed_images
