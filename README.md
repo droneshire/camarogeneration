@@ -1,0 +1,2 @@
+# camarogeneration
+File management
