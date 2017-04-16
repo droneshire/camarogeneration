@@ -11,7 +11,7 @@ import ftplib
 
 import erase_images
 
-FTP_SERVER_ADDR = 'ftp.debian.org'
+FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
 
 def my_print(text):
 	print text
@@ -26,6 +26,8 @@ class ScrapeImages(object):
 	IMAGE_COLUMN_NAME = 'Image File Names'
 
 	FTP_STOR_CMD = 'STOR '
+	FTP_LIST_CMD = 'LIST '
+	FTP_IMG_DIR = 'product_images'
 
 	def __init__(self, input_file, image_dir, erase_imgs=False,
 				 ftp_session=None, output=my_print):
@@ -94,6 +96,8 @@ class ScrapeImages(object):
 					if self.session is not None:
 						f = open(src, 'rb')
 						command = self.FTP_STOR_CMD + src
+						session.cwd(self.FTP_IMG_DIR)
+						ftp.retrlines(self.FTP_LIST_CMD + self.FTP_IMG_DIR)
 						self.session.storbinary(command, f)
 						f.close()
 				else:

@@ -54,8 +54,8 @@ class ReorderCsv(object):
 		try:
 			with open(self.infile, 'r') as fi, open(self.outfile, 'w') as fo:
 				in_csv = csv.reader(fi)
-				writer = csv.DictWriter(fo, fieldnames=reordered_header)
-				header = csv.DictWriter(fo, fieldnames=out_header)
+				writer = csv.DictWriter(fo, fieldnames=reordered_header, extrasaction='ignore')
+				header = csv.DictWriter(fo, fieldnames=out_header, extrasaction='ignore')
 				header.writeheader()
 				for r in csv.DictReader(fi):
 					writer.writerow(r)
