@@ -18,9 +18,7 @@ IMG_EXTENSION = '.jpg'
 IMAGE_COLUMN_NAME = 'Image File Names'
 
 FTP_SERVER_ADDR = 'ftp.debian.org'
-FTP_USERNAME = 'anonymous'
-FTP_PASSWORD = 'anonymous@'
-FTP_CMD = 'STOR '
+FTP_STOR_CMD = 'STOR '
 
 def get_images(root_dir, csvfile):
 	infile = os.path.join(root_dir, IMG_LIST_DIR, csvfile)
@@ -71,12 +69,14 @@ def run(input_filename, image_folder_dir=INPUT_DIR, upload_via_ftp=False):
 	if os.path.exists(image_folder_dir):
 		if upload_via_ftp:
 			try:
-				session = ftplib.FTP(FTP_SERVER_ADDR, FTP_USERNAME, FTP_PASSWORD)
+				print 'Connecting to {}...'.format(FTP_SERVER_ADDR)
+				l = raw_input('Enter ftp login: ')
+				p = raw_input('Enter ftp password: ')
+				session = ftplib.FTP(FTP_SERVER_ADDR, l, p)
 			except:
-				print 'Could not connect to {}@{}'.format(
-						FTP_USERNAME, FTP_SERVER_ADDR)
+				print 'Could not connect to {}'.format(FTP_SERVER_ADDR)
 				sys.exit(1)
-			print 'Connected to {}'.format(FTP_SERVER_ADDR)
+			print 'Connected'
 		for i in image_list:
 			src = os.path.join(image_folder_dir, i)
 			dst = os.path.join(out_dir, i)
@@ -86,7 +86,7 @@ def run(input_filename, image_folder_dir=INPUT_DIR, upload_via_ftp=False):
 				img_found += 1
 				if upload_via_ftp:
 					f = open(src, 'rb')
-					command = FTP_CMD + src
+					command = FTP_STOR_CMD + src
 					session.storbinary(command, f)
 					f.close()
 			else:
