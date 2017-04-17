@@ -24,6 +24,7 @@ class CgGui(object):
 		master.title('Camaro Generation File Tool')
 		self.filename=""
 		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
+		self.ftp_popup = None
 
 		rows = 1
 		# File dialogs
@@ -39,10 +40,6 @@ class CgGui(object):
 		bar2=Entry(master, textvariable=self.pfile_var, width=50).grid(
 					row=rows+1, column=1,columnspan=3, rowspan=1)
 
-
-		# self.ifile_var.trace("w", self.update_img_list_csv)
-		# self.pfile_var.trace("w", self.update_product_list_csv)
-
 		#Buttons
 		self.bbutton= Button(master, text="Browse", command=self.browseimgcsv)
 		self.bbutton.grid(row=rows, column=4)
@@ -54,7 +51,10 @@ class CgGui(object):
 		self.cbutton0.grid(row=rows+2, column=4, sticky = W + E)
 
 		self.radiobtn = Checkbutton(master, text='Erase Images After', variable=self.do_erase)
-		self.radiobtn.grid(row=rows+2, column=3, sticky = W + E)
+		self.radiobtn.grid(row=rows+2, column=3, sticky = W)
+
+		self.ftpsetupbtn = Button(master, text='Setup FTP', command=self.set_ftp)
+		self.ftpsetupbtn.grid(row=rows+3, column=3, sticky = W)
 
 		self.cbutton1= Button(master, text="Process Product List", command=self.reorder_csv_handle)
 		self.cbutton1.grid(row=rows+3, column=4, sticky = W + E)
@@ -73,6 +73,10 @@ class CgGui(object):
 		self.popup = None
 
 		self.session = None
+		self.server = StringVar()
+		self.user = StringVar()
+		self.pwd = StringVar()
+
 		self.img_list_file = ''
 		self.product_list_file = ''
 
@@ -117,17 +121,39 @@ class CgGui(object):
 		toplevel.focus_force()
 
 	def set_ftp(self):
-		session = None
-		if args.upload_ftp:
+		self.ftp_popup = Toplevel()
+		self.ftp_popup.title('Setup FTP')
+
+		server=Label(self.ftp_popup, text="FTP Server").grid(row=0, column=0)
+		Entry(self.ftp_popup, textvariable=self.server, width=50).grid(
+					row=0, column=1,columnspan=2, rowspan=1)
+		user=Label(self.ftp_popup, text="FTP Username").grid(row=1, column=0)
+		Entry(self.ftp_popup, textvariable=self.user, width=50).grid(
+					row=1, column=1,columnspan=2, rowspan=1)
+		pwd=Label(self.ftp_popup, text="FTP Password").grid(row=2, column=0)
+		Entry(self.ftp_popup, textvariable=self.pwd, width=50).grid(
+					row=2, column=1,columnspan=2, rowspan=1)
+
+		okbtn = Button(self.ftp_popup, text="Connect", command=self.process_ftp)
+		okbtn.grid(row=3 , column=1, sticky = W + E,columnspan=2, rowspan=1)
+		cbtn = Button(self.ftp_popup, text="Close", command=self.ftp_popup.destroy)
+		cbtn.grid(row=4 , column=1, sticky = W + E,columnspan=2, rowspan=1)
+
+		self.ftp_popup.focus_force()
+
+	def process_ftp(self):
+		print self.server.get(), self.user.get(), self.pwd.get()
+		if self.server.get() and self.user.get() and self.pwd.get():
 			try:
-				print('Connecting to {}...'.format(FTP_SERVER_ADDR))
-				l = raw_input('Enter ftp login: ')
-				p = raw_input('Enter ftp password: ')
-				session = ftplib.FTP(FTP_SERVER_ADDR, p, l)
+				print('Connecting to {}...'.format(self.server.get()))
+				self.session = ftplib.FTP(FTP_SERVER_ADDR, p, self.user.get(), self.pwd.get())
 			except:
-				print('Could not connect to {}'.format(FTP_SERVER_ADDR))
-				sys.exit(1)
-			print('Connected')
+				print('Could not connect to {}'.format(self.server.get()))
+				self.session = None
+				self.ftp_popup.destroy()
+		self.pwd.set('')
+		self.user.set('')
+		self.server.set('')
 
 	def scrape_imgs_handle(self):
 		if self.img_list_file:
@@ -148,7 +174,8 @@ class CgGui(object):
 		else:
 			self.popup_err('No csv file selected')
 
+if __name__ == "__main__":
+	root = Tk()
+	my_gui = CgGui(root)
+	root.mainloop()
 
-root = Tk()
-my_gui = CgGui(root)
-root.mainloop()
