@@ -76,6 +76,9 @@ class CgGui(object):
 		self.server = StringVar()
 		self.user = StringVar()
 		self.pwd = StringVar()
+		self.server.set('')
+		self.user.set('')
+		self.pwd.set('')
 
 		self.img_list_file = ''
 		self.product_list_file = ''
@@ -143,17 +146,18 @@ class CgGui(object):
 
 	def process_ftp(self):
 		print self.server.get(), self.user.get(), self.pwd.get()
-		if self.server.get() and self.user.get() and self.pwd.get():
+		if self.server.get():
 			try:
 				print('Connecting to {}...'.format(self.server.get()))
-				self.session = ftplib.FTP(FTP_SERVER_ADDR, p, self.user.get(), self.pwd.get())
+				self.session = ftplib.FTP(self.server.get())
+				self.session.login(self.user.get(), self.pwd.get())
 			except:
 				print('Could not connect to {}'.format(self.server.get()))
 				self.session = None
 				self.ftp_popup.destroy()
-		self.pwd.set('')
-		self.user.set('')
 		self.server.set('')
+		self.user.set('')
+		self.pwd.set('')
 
 	def scrape_imgs_handle(self):
 		if self.img_list_file:
