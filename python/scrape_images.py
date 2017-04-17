@@ -57,14 +57,14 @@ class ScrapeImages(object):
 				except:
 					self.fmt_out('ERROR: {} needs image list in column "{}"'.format(
 							csvfile, self.IMAGE_COLUMN_NAME))
-					sys.exit(1)
+					return []
 				for r in reader:
 					images.append(r[0] + self.IMG_EXTENSION)
 			f.close()
 			return images
 		except:
-			self.fmt_out('ERROR: Could not open {}'.format(infile))
-			sys.exit(1)
+			self.fmt_out('ERROR: Could not open {}'.format(csvfile))
+			return []
 
 	def parse_images(self):
 		i = datetime.datetime.now()
@@ -81,10 +81,10 @@ class ScrapeImages(object):
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 
-		self.fmt_out('Computing image list from {}...'.format(self.input_file))
+		print('Computing image list from {}...'.format(self.input_file))
 		image_list = self.get_images(self.input_file)
-		self.fmt_out('Searching for {} images in {}...'.format(len(image_list), self.image_dir))
-		self.fmt_out('Saving to {}...'.format(out_dir))
+		print('Searching for {} images in {}...'.format(len(image_list), self.image_dir))
+		print('Saving to {}...'.format(out_dir))
 
 		img_found = 0
 		missing = []
@@ -95,7 +95,7 @@ class ScrapeImages(object):
 				dst = os.path.join(out_dir, i)
 				if os.path.isfile(src):
 					copyfile(src, dst)
-					self.fmt_out('Found image {}...'.format(i))
+					print('Found image {}...'.format(i))
 					img_found += 1
 					if self.session is not None:
 						f = open(src, 'rb')
@@ -108,10 +108,11 @@ class ScrapeImages(object):
 					missing.append(i)
 			if self.session is not None:
 				self.session.quit()
+			if img_found != len(image_list):
+				self.fmt_out('Could not find the following images:\n{}'.format(
+							', '.join(missing)))
 
-			self.fmt_out('Could not find the following images:\n{}'.format(', '.join(missing)))
-
-			self.fmt_out('Found {} images'.format(img_found))
+			print('Found {} images'.format(img_found))
 			if self.do_erase:
 				erase_images.erase(self.image_dir, self.root_dir)
 		else:

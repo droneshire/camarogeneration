@@ -5,10 +5,10 @@ from Tkinter import *
 from PIL import ImageTk, Image
 import os
 import sys
+import glob
 
 from reorder_csv import ReorderCsv
 from scrape_images import ScrapeImages
-from scrape_images import path_leaf, my_print
 import erase_images
 
 FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
@@ -48,19 +48,19 @@ class CgGui(object):
 		self.bbutton1.grid(row=rows+1, column=4)
 
 		self.cbutton0= Button(master, text="Process Image List", command=self.scrape_imgs_handle)
-		self.cbutton0.grid(row=rows+2, column=4, sticky = W + E)
+		self.cbutton0.grid(row=rows+2, column=4, sticky = W + E, padx=5, pady=5)
 
 		self.radiobtn = Checkbutton(master, text='Erase Images After Parsing', variable=self.do_erase)
-		self.radiobtn.grid(row=rows+2, column=3, sticky = W)
+		self.radiobtn.grid(row=rows+2, column=3, sticky = W, padx=5, pady=5)
 
 		self.ftpsetupbtn = Button(master, text='Setup FTP', command=self.set_ftp)
-		self.ftpsetupbtn.grid(row=rows+3, column=3, sticky = W)
+		self.ftpsetupbtn.grid(row=rows+3, column=3, sticky = W, padx=5, pady=5)
 
 		self.cbutton1= Button(master, text="Process Product List", command=self.reorder_csv_handle)
-		self.cbutton1.grid(row=rows+3, column=4, sticky = W + E)
+		self.cbutton1.grid(row=rows+3, column=4, sticky = W + E, padx=5, pady=5)
 
 		self.close_button = Button(master, text="Close", command=master.quit)
-		self.close_button.grid(row=rows+4 , column=4, sticky = W + E)
+		self.close_button.grid(row=rows+4 , column=4, sticky = W + E, padx=5, pady=5)
 
 		# Logo
 		img_file = os.path.join(self.root_dir, self.IMG_DIR, self.LOGO)
@@ -68,9 +68,7 @@ class CgGui(object):
 		logo = Label(master, image=img)
 		logo.image = img
 		logo.grid(row=3, column=0, columnspan=2, rowspan=3,
-				  sticky=W+N+S, padx=5, pady=5)
-
-		self.popup = None
+				  sticky=W+N+S)
 
 		self.session = None
 		self.server = StringVar()
@@ -79,6 +77,8 @@ class CgGui(object):
 		self.server.set('')
 		self.user.set('')
 		self.pwd.set('')
+
+		self.err_count = 0
 
 		self.img_list_file = ''
 		self.product_list_file = ''
@@ -108,20 +108,30 @@ class CgGui(object):
 		return askopenfilename()
 
 	def popup_err(self, err_msg):
-		toplevel = Toplevel()
-		toplevel.title('ERROR')
-		self.popup = Label(toplevel, text='ERROR: ' + err_msg,
-			height=5, width=30)
-		self.popup.grid(row=1, column=0)
-		toplevel.focus_force()
+		err = Toplevel()
+		err.title('ERROR')
+		cbtn = Button(err, text="OK", command=err.destroy,
+					padx=5, pady=5)
+		cbtn.grid(row=2 , column=0)
+		popup = Label(err, text=err_msg,
+			height=5, width=len(err_msg))
+		popup.grid(row=1, column=0)
+		Label(err, text="").grid(row=3, column=0)
+		self.err_count +=1
+		err.focus_force()
 
 	def popup_success(self, msg):
-		toplevel = Toplevel()
-		toplevel.title('SUCCESS')
-		self.popup = Label(toplevel, text='SUCCESS: ' + msg,
-			height=5, width=30)
+		success = Toplevel()
+		success.title('SUCCESS')
+		cbtn = Button(success, text="OK", command=success.destroy,
+						padx=5, pady=5)
+		cbtn.grid(row=2 , column=0)
+		self.popup = Label(success, text=msg,
+			height=5, width=len(msg))
 		self.popup.grid(row=1, column=0)
-		toplevel.focus_force()
+		Label(success, text="").grid(row=3, column=0)
+		success.focus_force()
+
 
 	def set_ftp(self):
 		self.ftp_popup = Toplevel()
@@ -155,7 +165,7 @@ class CgGui(object):
 			except:
 				print('Could not connect to {}'.format(self.server.get()))
 				self.session = None
-				self.popup_err('Could not connect to {}'.format(self.server.get()))
+				self.popup_err('ERROR: Could not connect to {}'.format(self.server.get()))
 		self.ftp_popup.destroy()
 		self.server.set('')
 		self.user.set('')
@@ -163,25 +173,30 @@ class CgGui(object):
 
 	def scrape_imgs_handle(self):
 		if self.img_list_file:
-			print self.do_erase.get()
 			imgdir = os.path.abspath(os.path.join(
 					os.getcwd(), ScrapeImages.ROOT_DIR, ScrapeImages.INPUT_DIR))
-			rc = ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.session
-						).parse_images()
-			self.popup_success('Images parsed')
+			err_count = self.err_count
+			ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.session,
+						self.popup_err).parse_images()
+			if err_count == self.err_count:
+				self.popup_success('SUCCESS: Images parsed')
 		else:
-			self.popup_err('No csv file selected')
+			self.popup_err('ERROR: No csv file selected')
 
 	def reorder_csv_handle(self):
 		if self.product_list_file:
 			masterfile = os.path.abspath(os.path.join(os.getcwd(), ReorderCsv.MASTER_FILE))
-			rc = ReorderCsv(self.product_list_file, masterfile).reorder()
-			self.popup_success('Reordered product csv')
+			err_count = self.err_count
+			ReorderCsv(self.product_list_file, masterfile, self.popup_err).reorder()
+			if err_count == self.err_count:
+				self.popup_success('SUCCESS: Reordered product csv')
 		else:
-			self.popup_err('No csv file selected')
+			self.popup_err('ERROR: No csv file selected')
 
 if __name__ == "__main__":
 	root = Tk()
 	my_gui = CgGui(root)
 	root.mainloop()
+	for f in glob.glob("*.pyc"):
+		os.remove(f)
 

@@ -10,13 +10,16 @@ def path_leaf(path):
     head, tail = ntpath.split(path)
     return tail or ntpath.basename(head)
 
+def my_print(text):
+	print text
+
 class ReorderCsv(object):
 	ROOT_DIR = '..'
 	OUTPUT_DIR = 'converted_csvs'
 	INPUT_DIR = 'product_lists'
 	MASTER_FILE = 'master_product_list.csv'
 
-	def __init__(self, input_file, target_filename):
+	def __init__(self, input_file, target_filename, output=my_print):
 		i = datetime.datetime.now()
 		f, e = os.path.splitext(path_leaf(input_file))
 		out = f + '_{}_{}_{}_{}_{}'.format(
@@ -28,8 +31,8 @@ class ReorderCsv(object):
 		self.targetfile = target_filename
 
 	def reorder(self):
-		print 'Opening {}...'.format(self.infile)
-		print 'Saving output file as {}...'.format(self.outfile)
+		print('Opening {}...'.format(self.infile))
+		print('Saving output file as {}...'.format(self.outfile))
 
 		out_header = []
 		reordered_header = []
@@ -44,16 +47,16 @@ class ReorderCsv(object):
 				out_header = target_csv.next()[1:]
 				reordered_header = [r for r in target_csv if path_leaf(self.infile_name) in r]
 				if len(reordered_header) > 1:
-					print 'ERROR: multiple csv files with same name ({})'.format(
-							self.infile_name)
+					self.fmt_out('ERROR: multiple csv files with same name ({})'.format(
+							self.infile_name))
 					sys.exit(1)
 				if len(reordered_header) == 0:
-					print 'ERROR: no csv files with name {}'.format(self.infile_name)
+					self.fmt_out('ERROR: no csv files with name {}'.format(self.infile_name))
 					sys.exit(1)
 				reordered_header = reordered_header[0][1:]
 			ft.close()
 		except:
-			print 'ERROR: Could not open {}'.format(self.targetfile)
+			self.fmt_out('ERROR: Could not open {}'.format(self.targetfile))
 			sys.exit(1)
 		try:
 			with open(self.infile, 'r') as fi, open(self.outfile, 'w') as fo:
@@ -66,7 +69,8 @@ class ReorderCsv(object):
 			fi.close()
 			fo.close()
 		except:
-			print 'ERROR: Could not open {} or create {}'.format(self.infile, self.outfile)
+			self.fmt_out('ERROR: Could not open {} or create {}'.format(
+						self.infile, self.outfile))
 			sys.exit(1)
 
 
