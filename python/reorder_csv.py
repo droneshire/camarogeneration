@@ -4,7 +4,11 @@ import sys
 import csv
 import argparse
 import datetime
+import ntpath
 
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 class ReorderCsv(object):
 	ROOT_DIR = '..'
@@ -12,15 +16,15 @@ class ReorderCsv(object):
 	INPUT_DIR = 'product_lists'
 	MASTER_FILE = 'master_product_list.csv'
 
-	def __init__(self, input_filename, target_filename):
+	def __init__(self, input_file, target_filename):
 		i = datetime.datetime.now()
-		f, e = os.path.splitext(input_filename)
+		f, e = os.path.splitext(path_leaf(input_file))
 		out = f + '_{}_{}_{}_{}_{}'.format(
 						  i.month, i.day, i.year, i.hour, i.minute) + e
 		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
-		self.infile = os.path.join(self.root_dir, self.INPUT_DIR, input_filename)
+		self.infile = input_file
 		self.outfile = os.path.join(self.root_dir, self.OUTPUT_DIR, out)
-		self.infile_name = input_filename
+		self.infile_name = input_file
 		self.targetfile = target_filename
 
 	def reorder(self):
@@ -38,7 +42,7 @@ class ReorderCsv(object):
 			with open(self.targetfile, 'r') as ft:
 				target_csv = csv.reader(ft)
 				out_header = target_csv.next()[1:]
-				reordered_header = [r for r in target_csv if self.infile_name in r]
+				reordered_header = [r for r in target_csv if path_leaf(self.infile_name) in r]
 				if len(reordered_header) > 1:
 					print 'ERROR: multiple csv files with same name ({})'.format(
 							self.infile_name)
@@ -74,4 +78,7 @@ if __name__ == "__main__":
 						help='Filename to match', default=[ReorderCsv.MASTER_FILE])
 	args = parser.parse_args()
 
-	ReorderCsv(args.input_filename[0], args.target_filename[0]).reorder()
+	root = os.path.abspath(os.path.join(os.getcwd(), ReorderCsv.ROOT_DIR))
+	infile = os.path.join(root, ReorderCsv.INPUT_DIR, args.input_filename[0])
+
+	ReorderCsv(infile, args.target_filename[0]).reorder()

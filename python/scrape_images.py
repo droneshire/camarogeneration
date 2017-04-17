@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import datetime
+import ntpath
 import csv
 from shutil import copyfile
 
@@ -12,6 +13,10 @@ import ftplib
 import erase_images
 
 FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
+
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 def my_print(text):
 	print text
@@ -35,17 +40,16 @@ class ScrapeImages(object):
 
 		self.input_file = input_file
 		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
-		self.image_dir = os.path.join(self.root_dir, image_dir)
+		self.image_dir = image_dir
 
 		self.session = ftp_session
 
 		self.fmt_out = output
 
 	def get_images(self, csvfile):
-		infile = os.path.join(self.root_dir, self.IMG_LIST_DIR, csvfile)
 		images = []
 		try:
-			with open(infile, 'r') as f:
+			with open(csvfile, 'r') as f:
 				reader = csv.reader(f)
 				header = reader.next()
 				try:
@@ -64,7 +68,7 @@ class ScrapeImages(object):
 
 	def parse_images(self):
 		i = datetime.datetime.now()
-		f, e = os.path.splitext(self.input_file)
+		f, e = os.path.splitext(path_leaf(self.input_file))
 		out = f + '_{}_{}_{}_{}_{}'.format(
 						  i.month, i.day, i.year, i.hour, i.minute)
 
@@ -139,4 +143,8 @@ if __name__ == "__main__":
 			sys.exit(1)
 		print('Connected')
 
-	ScrapeImages(args.input_file[0], args.input_dir[0], args.erase, session).parse_images()
+	root = os.path.abspath(os.path.join(os.getcwd(), ScrapeImages.ROOT_DIR))
+	infile = os.path.join(root, ScrapeImages.IMG_LIST_DIR, args.input_file[0])
+	imgdir = os.path.join(root, args.input_dir[0])
+
+	ScrapeImages(infile, imgdir, args.erase, session).parse_images()
