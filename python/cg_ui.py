@@ -50,7 +50,7 @@ class CgGui(object):
 		self.cbutton0= Button(master, text="Process Image List", command=self.scrape_imgs_handle)
 		self.cbutton0.grid(row=rows+2, column=4, sticky = W + E)
 
-		self.radiobtn = Checkbutton(master, text='Erase Images After', variable=self.do_erase)
+		self.radiobtn = Checkbutton(master, text='Erase Images After Parsing', variable=self.do_erase)
 		self.radiobtn.grid(row=rows+2, column=3, sticky = W)
 
 		self.ftpsetupbtn = Button(master, text='Setup FTP', command=self.set_ftp)
@@ -151,10 +151,12 @@ class CgGui(object):
 				print('Connecting to {}...'.format(self.server.get()))
 				self.session = ftplib.FTP(self.server.get())
 				self.session.login(self.user.get(), self.pwd.get())
+				self.popup_success('Connected to {}'.format(self.server.get()))
 			except:
 				print('Could not connect to {}'.format(self.server.get()))
 				self.session = None
-				self.ftp_popup.destroy()
+				self.popup_err('Could not connect to {}'.format(self.server.get()))
+		self.ftp_popup.destroy()
 		self.server.set('')
 		self.user.set('')
 		self.pwd.set('')
