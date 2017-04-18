@@ -46,29 +46,29 @@ class CgGui(object):
 
 		reordercsv=Label(master, text="Product List CSV").grid(row=2, column=0)
 		bar2=Entry(master, textvariable=self.pfile_var, width=50).grid(
-					row=rows+1, column=1,columnspan=3, rowspan=1)
+					row=rows+1, column=1, columnspan=3, rowspan=1)
 
 		#Buttons
 		self.bbutton= Button(master, text="Browse", command=self.browseimgcsv)
-		self.bbutton.grid(row=rows, column=4)
+		self.bbutton.grid(row=rows, column=4, padx=10, sticky = W)
 
 		self.bbutton1= Button(master, text="Browse", command=self.browseproductcsv)
-		self.bbutton1.grid(row=rows+1, column=4)
+		self.bbutton1.grid(row=rows+1, column=4, padx=10, sticky = W)
 
 		self.cbutton0= Button(master, text="Process Image List", command=self.scrape_imgs_handle)
-		self.cbutton0.grid(row=rows+2, column=4, sticky = W + E, padx=5, pady=5)
+		self.cbutton0.grid(row=rows+2, column=3, sticky = W + E, padx=5, pady=5, columnspan=2, rowspan=1)
 
 		self.radiobtn = Checkbutton(master, text='Erase Images After Parsing', variable=self.do_erase)
-		self.radiobtn.grid(row=rows+2, column=3, sticky = W, padx=5, pady=5)
+		self.radiobtn.grid(row=rows+2, column=2, sticky = W, padx=5, pady=5)
 
 		self.ftpsetupbtn = Button(master, text='Setup FTP', command=self.set_ftp)
-		self.ftpsetupbtn.grid(row=rows+3, column=3, sticky = W, padx=5, pady=5)
+		self.ftpsetupbtn.grid(row=rows+3, column=2, sticky = W, padx=5, pady=5)
 
 		self.cbutton1= Button(master, text="Process Product List", command=self.reorder_csv_handle)
-		self.cbutton1.grid(row=rows+3, column=4, sticky = W + E, padx=5, pady=5)
+		self.cbutton1.grid(row=rows+3, column=3, sticky = W + E, padx=5, columnspan=2, rowspan=1)
 
 		self.close_button = Button(master, text="Close", command=master.quit)
-		self.close_button.grid(row=rows+4 , column=4, sticky = W + E, padx=5, pady=5)
+		self.close_button.grid(row=rows+4 , column=3, sticky = W + E, padx=5, columnspan=2, rowspan=1)
 
 		# Logo
 		img_file = os.path.join(self.root_dir, self.IMG_DIR, self.LOGO)
