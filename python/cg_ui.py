@@ -136,7 +136,7 @@ class CgGui(object):
 						padx=5, pady=5)
 		cbtn.grid(row=2 , column=0)
 		self.popup = Label(success, text=msg,
-			wraplength=200, anchor=W+E, justify=CENTER)
+			wraplength=200, anchor=W, justify=CENTER)
 		self.popup.grid(row=1, column=0)
 		Label(success, text="").grid(row=3, column=0)
 		success.focus_force()

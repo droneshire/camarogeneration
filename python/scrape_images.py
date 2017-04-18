@@ -105,6 +105,12 @@ class ScrapeImages(object):
 				self.fmt_out('Could not find the following images:\n{}'.format(
 							', '.join(missing)))
 
+			# remove directory if nothing was placed in it
+			try:
+				os.rmdir(out_dir)
+			except:
+				pass
+
 			util.printf('Found {} images'.format(img_found))
 			if self.do_erase:
 				erase_images.erase(self.image_dir, self.root_dir)
