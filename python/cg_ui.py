@@ -10,8 +10,13 @@ import glob
 from reorder_csv import ReorderCsv
 from scrape_images import ScrapeImages
 import erase_images
+import util
 
 FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
+
+import logger
+LOG_FILE= './logs/{}.log'.format(__name__)
+log = logger.get_logger(__name__, LOG_FILE)
 
 class CgGui(object):
 	ROOT_DIR = '.'
@@ -25,6 +30,9 @@ class CgGui(object):
 		self.filename=""
 		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
 		self.ftp_popup = None
+
+		# Visual separation in the log
+		log.info('\n\n')
 
 		rows = 1
 		# File dialogs
@@ -114,11 +122,12 @@ class CgGui(object):
 					padx=5, pady=5)
 		cbtn.grid(row=2 , column=0)
 		popup = Label(err, text=err_msg,
-			height=5, width=len(err_msg))
+			wraplength=200, anchor=W, justify=CENTER)
 		popup.grid(row=1, column=0)
 		Label(err, text="").grid(row=3, column=0)
 		self.err_count +=1
 		err.focus_force()
+		log.error(err_msg)
 
 	def popup_success(self, msg):
 		success = Toplevel()
@@ -127,10 +136,11 @@ class CgGui(object):
 						padx=5, pady=5)
 		cbtn.grid(row=2 , column=0)
 		self.popup = Label(success, text=msg,
-			height=5, width=len(msg))
+			wraplength=200, anchor=W+E, justify=CENTER)
 		self.popup.grid(row=1, column=0)
 		Label(success, text="").grid(row=3, column=0)
 		success.focus_force()
+		log.info(msg)
 
 
 	def set_ftp(self):

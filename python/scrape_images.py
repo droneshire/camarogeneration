@@ -3,10 +3,9 @@ import os
 import sys
 import argparse
 import datetime
-import ntpath
 import csv
 from shutil import copyfile
-
+import util
 import urllib
 import ftplib
 
@@ -14,12 +13,6 @@ import erase_images
 
 FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
 
-def path_leaf(path):
-    head, tail = ntpath.split(path)
-    return tail or ntpath.basename(head)
-
-def my_print(text):
-	print text
 
 class ScrapeImages(object):
 	ROOT_DIR = '..'
@@ -35,7 +28,7 @@ class ScrapeImages(object):
 	FTP_IMG_DIR = 'product_images'
 
 	def __init__(self, input_file, image_dir, erase_imgs=False,
-				 ftp_session=None, output=my_print):
+				 ftp_session=None, output=util.printf):
 		self.do_erase = erase_imgs
 
 		self.input_file = input_file
@@ -68,7 +61,7 @@ class ScrapeImages(object):
 
 	def parse_images(self):
 		i = datetime.datetime.now()
-		f, e = os.path.splitext(path_leaf(self.input_file))
+		f, e = os.path.splitext(util.path_leaf(self.input_file))
 		out = f + '_{}_{}_{}_{}_{}'.format(
 						  i.month, i.day, i.year, i.hour, i.minute)
 
@@ -81,10 +74,10 @@ class ScrapeImages(object):
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 
-		print('Computing image list from {}...'.format(self.input_file))
+		util.printf('Computing image list from {}...'.format(self.input_file))
 		image_list = self.get_images(self.input_file)
-		print('Searching for {} images in {}...'.format(len(image_list), self.image_dir))
-		print('Saving to {}...'.format(out_dir))
+		util.printf('Searching for {} images in {}...'.format(len(image_list), self.image_dir))
+		util.printf('Saving to {}...'.format(out_dir))
 
 		img_found = 0
 		missing = []
@@ -95,7 +88,7 @@ class ScrapeImages(object):
 				dst = os.path.join(out_dir, i)
 				if os.path.isfile(src):
 					copyfile(src, dst)
-					print('Found image {}...'.format(i))
+					util.printf('Found image {}...'.format(i))
 					img_found += 1
 					if self.session is not None:
 						f = open(src, 'rb')
@@ -112,7 +105,7 @@ class ScrapeImages(object):
 				self.fmt_out('Could not find the following images:\n{}'.format(
 							', '.join(missing)))
 
-			print('Found {} images'.format(img_found))
+			util.printf('Found {} images'.format(img_found))
 			if self.do_erase:
 				erase_images.erase(self.image_dir, self.root_dir)
 		else:
@@ -135,14 +128,14 @@ if __name__ == "__main__":
 	session = None
 	if args.upload_ftp:
 		try:
-			print('Connecting to {}...'.format(FTP_SERVER_ADDR))
+			util.printf('Connecting to {}...'.format(FTP_SERVER_ADDR))
 			l = raw_input('Enter ftp login: ')
 			p = raw_input('Enter ftp password: ')
 			session = ftplib.FTP(FTP_SERVER_ADDR, p, l)
 		except:
-			print('Could not connect to {}'.format(FTP_SERVER_ADDR))
+			util.printf('Could not connect to {}'.format(FTP_SERVER_ADDR))
 			sys.exit(1)
-		print('Connected')
+		util.printf('Connected')
 
 	root = os.path.abspath(os.path.join(os.getcwd(), ScrapeImages.ROOT_DIR))
 	infile = os.path.join(root, ScrapeImages.IMG_LIST_DIR, args.input_file[0])
