@@ -32,7 +32,7 @@ class CgGui(object):
 		self.ftp_popup = None
 
 		# Visual separation in the log
-		log.info('\n\n')
+		log.info('Log Start')
 
 		rows = 1
 		# File dialogs
