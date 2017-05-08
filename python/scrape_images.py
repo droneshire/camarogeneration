@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 import os
 import sys
 import argparse
@@ -8,6 +8,7 @@ from shutil import copyfile
 import util
 import urllib
 import ftplib
+from PIL import Image
 
 import erase_images
 
@@ -28,7 +29,7 @@ class ScrapeImages(object):
 	FTP_IMG_DIR = 'product_images'
 
 	def __init__(self, input_file, image_dir, erase_imgs=False,
-				 ftp_session=None, output=util.printf):
+				 ftp_session=None, output=util.printf, thumbnail_sizes=None):
 		self.do_erase = erase_imgs
 
 		self.input_file = input_file
@@ -38,6 +39,7 @@ class ScrapeImages(object):
 		self.session = ftp_session
 
 		self.fmt_out = output
+		self.thumbnail_sizes = thumbnail_sizes
 
 	def get_images(self, csvfile):
 		images = []
@@ -87,7 +89,20 @@ class ScrapeImages(object):
 				src = os.path.join(self.image_dir, i)
 				dst = os.path.join(out_dir, i)
 				if os.path.isfile(src):
-					copyfile(src, dst)
+					if len(self.thumbnail_sizes) is not 0:
+							for tb in range(len(self.thumbnail_sizes)):
+								with Image.open(src) as img:
+									width = self.thumbnail_sizes[tb]
+									size = (width, width)
+									img.thumbnail(size, Image.ANTIALIAS)
+									f, e = os.path.splitext(util.path_leaf(dst))
+									imgname = os.path.join(
+										out_dir,'{}-{}.jpg'.format(f, tb))
+									print '{} {}'.format(size, imgname)
+									img.save(imgname)
+									img.close()
+					else:
+						copyfile(src, dst)
 					util.printf('Found image {}...'.format(i))
 					img_found += 1
 					if self.session is not None:

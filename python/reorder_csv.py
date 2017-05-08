@@ -12,7 +12,7 @@ class ReorderCsv(object):
 	ROOT_DIR = '..'
 	OUTPUT_DIR = 'converted_csvs'
 	INPUT_DIR = 'product_lists'
-	MASTER_FILE = 'master_product_list.csv'
+	MASTER_FILE = '../master_product_list.csv'
 
 	def __init__(self, input_file, target_filename, output=util.printf):
 		i = datetime.datetime.now()
