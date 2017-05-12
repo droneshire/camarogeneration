@@ -19,6 +19,7 @@ class ScrapeImages(object):
 	ROOT_DIR = '..'
 	OUTPUT_DIR = 'parsed_images'
 	INPUT_DIR = 'images'
+	THUMBNAIL_DIR = 'thumbnails'
 
 	IMG_LIST_DIR = 'image_lists'
 	IMG_EXTENSION = '.jpg'
@@ -65,8 +66,8 @@ class ScrapeImages(object):
 	def parse_images(self):
 		i = datetime.datetime.now()
 		f, e = os.path.splitext(util.path_leaf(self.input_file))
-		out = f + '_{}_{}_{}_{}_{}'.format(
-						  i.month, i.day, i.year, i.hour, i.minute)
+		out = f + '_{}_{}_{}_{}_{}_{}'.format(
+						  i.month, i.day, i.year, i.hour, i.minute, i.second)
 
 		parsed_dir = os.path.join(self.root_dir, self.OUTPUT_DIR)
 
@@ -94,16 +95,20 @@ class ScrapeImages(object):
 						copyfile(src, dst)
 
 					if self.thumbnail_sizes is not None:
-							for tb in self.thumbnail_sizes:
-								with Image.open(src) as img:
-									width = self.thumbnail_sizes[tb]
-									size = (width, width)
-									img.thumbnail(size, Image.ANTIALIAS)
-									f, e = os.path.splitext(util.path_leaf(dst))
-									imgname = os.path.join(
-										out_dir,'{}{}.jpg'.format(f, tb))
-									img.save(imgname)
-									img.close()
+						t_dir = os.path.join(out_dir, self.THUMBNAIL_DIR)
+						if not os.path.exists(t_dir):
+							os.makedirs(t_dir)
+
+						for tb in self.thumbnail_sizes:
+							with Image.open(src) as img:
+								width = self.thumbnail_sizes[tb]
+								size = (width, width)
+								img.thumbnail(size, Image.ANTIALIAS)
+								f, e = os.path.splitext(util.path_leaf(dst))
+								imgname = os.path.join(
+									t_dir,'{}{}.jpg'.format(f, tb))
+								img.save(imgname)
+								img.close()
 					else:
 						copyfile(src, dst)
 
