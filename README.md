@@ -23,7 +23,7 @@ File management and image parsing.
 
 4) Run the tool (can use the batch script provided) or run python cg_ui.py
 
-5) Browse for the image list CSV
+5) Go to the 'Process Images' tab and browse for the image list CSV
 
 6) If you want images erased after being processed, check the 'Erase Images' checkbox
 
