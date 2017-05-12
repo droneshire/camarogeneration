@@ -27,7 +27,9 @@ File management and image parsing.
 
 6) If you want images erased after being processed, check the 'Erase Images' checkbox
 
-7) If you want thumbnails, set the widths as desired
+7) If you want thumbnails, set the widths as desired. If you don't want thumbnails, set all widths to 0
+
+7) If yout want the original copied as well as thumbnails, check the 'Include Originals' box.
 
 8) Click 'Process Image List'
 
