@@ -1,5 +1,5 @@
 # camarogeneration
-File management
+File management and image parsing.
 
 ## To Reorder a CSV File:
 1) Open master_product_list.csv
@@ -8,38 +8,27 @@ File management
 
 3) For each of columns, match the header from your input file to golden header
 
-4) Run the following in the command line:
-		cd C:\Users\Erika\Dropbox\camarogeneration\python
-		python reorder_csv.py -f name_of_file.csv
-	NOTE: the name_of_file.csv needs to match the filename
-	      entered into the master_product_list.csv in step 2
+4) Run the tool (can use the batch script provided) or run python cg_ui.py
 
-5) The reordered csv file will be placed into the C:\Users\Erika\Dropbox\camarogeneration\converted_csvs\ folder with the same name as the input file only with a timestamp added to it. E.g. if input filename was input.csv, the output will be input_4_15_2017_16_53.csv
+5) Go to the 'Process CSV' tab. Browse for CSV and click 'Process Product List'
+
+6) The reordered csv file will be placed into the converted_csvs folder with the same name as the input file only with a timestamp added to it. E.g. if input filename was input.csv, the output will be input_4_15_2017_16_53.csv
 
 ## To Parse Images from CSV File List:
 1) Create an image csv file. This needs to have a column in it with "Image File Names"
 
-2) Place image csv file into the C:\Users\Erika\Dropbox\camarogeneration\image_lists folder
+2) Place image csv file into the image_lists folder
 
-3) Place images into the C:\Users\Erika\Dropbox\camarogeneration\images folder
+3) Place images into the images folder
 
-4) Run the following in the command line:
-		cd C:\Users\Erika\Dropbox\camarogeneration\python
-		python scrape_images.py -f name_of_image_list_file.csv
-	NOTE: the name_of_image_list_file.csv needs to match the filename
-	      of the file placed into the image_lists folder in step 1
-	NOTE: if you want to upload via FTP, use the -u option at the end of the
-		  command (i.e. python scrape_images.py -f name_of_image_list_file.csv -u)
-        NOTE: if you want to erase the images after copying them, add the '-e' flag (i.e. python scrape_images.py -f name_of_image_list_file.csv -e)
+4) Run the tool (can use the batch script provided) or run python cg_ui.py
 
-5) The correct images will be copied into the C:\Users\Erika\Dropbox\camarogeneration\parsed_images folder.  All images will be erased from the C:\Users\Erika\Dropbox\camarogeneration\images folder once the correct ones have been copied.
+5) Browse for the image list CSV
 
-## To erase images after they are copied using scrape_images.py:
-1) Run the following in the command line:
-		cd C:\Users\Erika\Dropbox\camarogeneration\python
-		python erase_images.py
-	WARNING: Make sure you use this erase script only AFTER you have copied over all files!
-OR
-2) Run scrape_images.py with the erase flag '-e'
-                i.e. python scrape_images.py -f name_of_image_list_file.csv -e
+6) If you want images erased after being processed, check the 'Erase Images' checkbox
 
+7) If you want thumbnails, set the widths as desired
+
+8) Click 'Process Image List'
+
+9) The correct images will be copied into the parsed_images folder.  All images will be erased from the images folder once the correct ones have been copied.
