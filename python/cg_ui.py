@@ -42,6 +42,7 @@ class CgGui(object, Frame):
 		self.ifile_var = StringVar()
 		self.pfile_var = StringVar()
 		self.do_erase = IntVar()
+		self.do_copy_original = IntVar()
 		self.size0 = IntVar()
 		self.size1 = IntVar()
 		self.size2t = IntVar()
@@ -116,6 +117,9 @@ class CgGui(object, Frame):
 
 		rb = Checkbutton(frame, text='Erase Images', variable=self.do_erase)
 		rb.grid(row=starting_row+1, column=starting_column+3, sticky=W, padx=5, pady=5,columnspan=2)
+		rb = Checkbutton(frame, text='Include Original', variable=self.do_copy_original)
+		rb.grid(row=starting_row+1, column=starting_column+1, sticky=E, padx=5, pady=5,columnspan=2)
+
 
 		image_sizing_row_start = starting_row+2
 		image_sizing_column = starting_column+1
@@ -274,8 +278,8 @@ class CgGui(object, Frame):
 			else:
 				thumbnail_sizes = self.THUMBNAILS
 				print self.THUMBNAILS
-			ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.session,
-						self.popup_err, thumbnail_sizes).parse_images()
+			ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.do_copy_original.get(),
+				self.session, self.popup_err, thumbnail_sizes).parse_images()
 			if err_count == self.err_count:
 				self.popup_success('SUCCESS: Images parsed')
 		else:

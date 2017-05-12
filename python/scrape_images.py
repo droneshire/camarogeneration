@@ -28,9 +28,10 @@ class ScrapeImages(object):
 	FTP_LIST_CMD = 'LIST '
 	FTP_IMG_DIR = 'product_images'
 
-	def __init__(self, input_file, image_dir, erase_imgs=False,
+	def __init__(self, input_file, image_dir, erase_imgs=False, do_copy_original=True,
 				 ftp_session=None, output=util.printf, thumbnail_sizes=None):
 		self.do_erase = erase_imgs
+		self.do_copy_original = do_copy_original
 
 		self.input_file = input_file
 		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
@@ -89,6 +90,9 @@ class ScrapeImages(object):
 				src = os.path.join(self.image_dir, i)
 				dst = os.path.join(out_dir, i)
 				if os.path.isfile(src):
+					if self.do_copy_original:
+						copyfile(src, dst)
+
 					if self.thumbnail_sizes is not None:
 							for tb in self.thumbnail_sizes:
 								with Image.open(src) as img:
@@ -102,6 +106,7 @@ class ScrapeImages(object):
 									img.close()
 					else:
 						copyfile(src, dst)
+
 					util.printf('Found image {}...'.format(i))
 					img_found += 1
 					if self.session is not None:
