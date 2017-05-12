@@ -14,6 +14,7 @@ def path_leaf(path):
     return tail or ntpath.basename(head)
 
 def rename_jpgs(path):
+	os.chdir(path)
 	for file in glob.glob("*.jpg"):
 		newname = file.split('-')
 		os.system('mv {} {}'.format(file, newname[0] + '.jpg'))

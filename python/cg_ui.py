@@ -16,16 +16,18 @@ import util
 FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
 
 import logger
-LOG_FILE= './logs/{}.log'.format(__name__)
-log = logger.get_logger(__name__, LOG_FILE)
 
 class CgGui(object, Frame):
 	ROOT_DIR = '.'
 	UI_DIR = 'ui'
 	IMG_DIR = os.path.join(UI_DIR,'images')
 	LOGO = 'cg_logo.jpg'
+	THUMBNAILS = {'-0':0, '-1':0, '-2T':0, '-2':0}
 
 	def __init__(self):
+		LOG_FILE= './logs/{}.log'.format(__file__)
+		self.log = logger.get_logger(__file__, LOG_FILE)
+
 		Frame.__init__(self, name='camaro_gen_tool')
 		self.master.title('Camaro Generation File Tool')
 		self.pack(expand=Y, fill=BOTH)
@@ -34,12 +36,22 @@ class CgGui(object, Frame):
 		self.ftp_popup = None
 
 		# Visual separation in the log
-		log.info('Log Start')
+		self.log.info('Log Start')
 
 		# File dialogs
 		self.ifile_var = StringVar()
 		self.pfile_var = StringVar()
 		self.do_erase = IntVar()
+		self.size0 = IntVar()
+		self.size1 = IntVar()
+		self.size2t = IntVar()
+		self.size2 = IntVar()
+
+		self.size0.set(50)
+		self.size1.set(100)
+		self.size2t.set(150)
+		self.size2.set(500)
+
 
 		self.session = None
 		self.server = StringVar()
@@ -78,39 +90,49 @@ class CgGui(object, Frame):
 		# frame to hold contentx
 		frame = Frame(nb)
 
-		starting_row = 2
-		self.add_logo(frame, starting_row + 3)
+		starting_row = 0
+		starting_column = 0
+		self.add_logo(frame, starting_row + 2)
 
-		icsv=Label(frame, text="Image List CSV").grid(row=starting_row, column=0)
-		bar1=Entry(frame, textvariable=self.ifile_var, width=50).grid(
-					row=starting_row, column=1,columnspan=3, rowspan=1)
+		icsv=Label(frame, text="Image List CSV").grid(row=starting_row, column=starting_column)
+		bar1=Entry(frame, textvariable=self.ifile_var, width=40).grid(
+					row=starting_row, column=starting_column+1,columnspan=4, rowspan=1)
 
 		#Buttons
 		bbutton= Button(frame, text="Browse", command=self.browseimgcsv)
-		bbutton.grid(row=starting_row, column=4, padx=10, sticky = W)
+		bbutton.grid(row=starting_row, column=starting_column+5, padx=5, pady=5, sticky=W+E)
 
 		eb= Button(frame, text="Process Image List", command=self.scrape_imgs_handle)
-		eb.grid(row=starting_row+2, column=3, sticky = W + E, padx=5, pady=5, columnspan=2, rowspan=1)
+		eb.grid(row=starting_row+1, column=starting_column+5, sticky = W + E, padx=5, pady=5)
 
 		fb = Button(frame, text='Setup FTP', command=self.set_ftp)
-		fb.grid(row=starting_row+3, column=3, sticky = W + E, padx=5, pady=5,columnspan=2, rowspan=1)
-
-		rb = Checkbutton(frame, text='Erase Images After Parsing', variable=self.do_erase)
-		rb.grid(row=starting_row+2, column=2, sticky = S + W, padx=5, pady=5)
+		fb.grid(row=starting_row+2, column=starting_column+5, sticky = W + E, padx=5, pady=5)
 
 		cb = Button(frame, text="Close", command=self.master.quit)
-		cb.grid(row=starting_row+4 , column=3, sticky = W + E, padx=5, pady=5, columnspan=2, rowspan=1)
+		cb.grid(row=starting_row+3 , column=starting_column+5, sticky = W + E, padx=5, pady=5)
 
 		# Image sizing
-		icsv=Label(frame, text="Thumbnail Width Size").grid(
-					row=starting_row+2, column=1, sticky = S)
-		scrollbar = Scrollbar(frame, orient=VERTICAL)
-		self.thumbnail_listbox =Listbox(frame, selectmode=MULTIPLE, yscrollcommand=scrollbar.set)
-		scrollbar.config(command=self.thumbnail_listbox.yview)
-		self.thumbnail_listbox.grid(row=starting_row+3, column=1, sticky = W, padx=5, pady=5, columnspan=1, rowspan=3)
+		entry_width = 3
 
-		for i in range(10):
-			self.thumbnail_listbox.insert(END, str((i+1) * 50))
+		rb = Checkbutton(frame, text='Erase Images', variable=self.do_erase)
+		rb.grid(row=starting_row+1, column=starting_column+3, sticky=W, padx=5, pady=5,columnspan=2)
+
+		image_sizing_row_start = starting_row+2
+		image_sizing_column = starting_column+1
+		lsize0=Label(frame, text="Photo Size 0 (Width)").grid(
+					row=image_sizing_row_start, column=image_sizing_column, sticky = E)
+		bsize0 =Entry(frame, textvariable=self.size0, width=entry_width).grid(
+					row=image_sizing_row_start, column=image_sizing_column+1, sticky = W, padx=5, pady=5)
+		lsize1=Label(frame, text="Photo Size 1 (Width)").grid(row=image_sizing_row_start+1, column=image_sizing_column, sticky = E)
+		bsize1 =Entry(frame, textvariable=self.size1, width=entry_width).grid(
+					row=image_sizing_row_start+1, column=image_sizing_column+1, sticky = W, padx=5, pady=5)
+
+		lsize2t=Label(frame, text="Photo Size 2T (Width)").grid(row=image_sizing_row_start, column=image_sizing_column+2, sticky = E)
+		bsize2t =Entry(frame, textvariable=self.size2t, width=entry_width).grid(
+					row=image_sizing_row_start, column=image_sizing_column+3, sticky = W, padx=5, pady=5)
+		lsize2 =Label(frame, text="Photo Size 2 (Width)").grid(row=image_sizing_row_start+1, column=image_sizing_column+2, sticky = E)
+		bsize2 =Entry(frame, textvariable=self.size2, width=entry_width).grid(
+					row=image_sizing_row_start+1, column=image_sizing_column+3, sticky = W, padx=5, pady=5)
 
 		frame.rowconfigure(1, weight=1)
 		frame.columnconfigure((0,1), weight=1, uniform=1)
@@ -122,23 +144,23 @@ class CgGui(object, Frame):
 		# frame to hold contentx
 		frame = Frame(nb)
 
-		starting_row = 1
+		starting_row = 0
 
 		self.add_logo(frame, starting_row + 2)
 
 		reordercsv=Label(frame, text="Product List CSV").grid(row=starting_row, column=0)
 		bar2=Entry(frame, textvariable=self.pfile_var, width=50).grid(
-					row=starting_row, column=1, columnspan=3, rowspan=1)
+					row=starting_row, column=1, columnspan=4, rowspan=1)
 
 		#Buttons
 		self.bbutton1= Button(frame, text="Browse", command=self.browseproductcsv)
-		self.bbutton1.grid(row=starting_row, column=4, padx=10, sticky = W)
+		self.bbutton1.grid(row=starting_row, column=5, padx=5, sticky = W+E)
 
 		self.cbutton1= Button(frame, text="Process Product List", command=self.reorder_csv_handle)
-		self.cbutton1.grid(row=starting_row+3, column=3, sticky = W + E, padx=5, pady=5, columnspan=2, rowspan=1)
+		self.cbutton1.grid(row=starting_row+1, column=5, sticky = W+E, padx=5, pady=5)
 
 		self.close_button = Button(frame, text="Close", command=self.master.quit)
-		self.close_button.grid(row=starting_row+4 , column=3, sticky = W + E, padx=5, pady=5, columnspan=2, rowspan=1)
+		self.close_button.grid(row=starting_row+2 , column=5, sticky = W+E, padx=5, pady=5)
 
 		frame.rowconfigure(1, weight=1)
 		frame.columnconfigure((0,1), weight=1, uniform=1)
@@ -152,19 +174,13 @@ class CgGui(object, Frame):
 		img = ImageTk.PhotoImage(Image.open(img_file))
 		logo = Label(master, image=img)
 		logo.image = img
-		logo.grid(row=row, column=0, columnspan=2, rowspan=3,
-				  sticky=W+S)
+		logo.grid(row=row, column=0, sticky=N+S+E+W, columnspan=1, rowspan=4)
 
 	def update_img_list_csv(self):
 		self.ifile_var.set(self.img_list_file)
 
 	def update_product_list_csv(self):
 		self.pfile_var.set(self.product_list_file)
-
-	def cycle_label_text(self, event):
-		self.label_index += 1
-		self.label_index %= len(self.LABEL_TEXT) # wrap around
-		self.label_text.set(self.LABEL_TEXT[self.label_index])
 
 	def browseimgcsv(self):
 		self.img_list_file = self.browsefile()
@@ -190,7 +206,7 @@ class CgGui(object, Frame):
 		Label(err, text="").grid(row=3, column=0)
 		self.err_count +=1
 		err.focus_force()
-		log.error(err_msg)
+		self.log.error(err_msg)
 
 	def popup_success(self, msg):
 		success = Toplevel()
@@ -202,7 +218,7 @@ class CgGui(object, Frame):
 		self.popup.grid(row=1, column=0)
 		Label(success, text="").grid(row=3, column=0)
 		success.focus_force()
-		log.info(msg)
+		self.log.info(msg)
 
 
 	def set_ftp(self):
@@ -248,7 +264,16 @@ class CgGui(object, Frame):
 			imgdir = os.path.abspath(os.path.join(
 					os.getcwd(), ScrapeImages.ROOT_DIR, ScrapeImages.INPUT_DIR))
 			err_count = self.err_count
-			thumbnail_sizes = [(x+1) * 50 for x in list(self.thumbnail_listbox.curselection())]
+			self.THUMBNAILS['-0'] = self.size0.get()
+			self.THUMBNAILS['-1'] = self.size1.get()
+			self.THUMBNAILS['-2T'] = self.size2t.get()
+			self.THUMBNAILS['-2'] = self.size2.get()
+			if sum(1 for x in self.THUMBNAILS.values() if x == 0) == len(self.THUMBNAILS):
+				thumbnail_sizes = None
+				print 'None'
+			else:
+				thumbnail_sizes = self.THUMBNAILS
+				print self.THUMBNAILS
 			ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.session,
 						self.popup_err, thumbnail_sizes).parse_images()
 			if err_count == self.err_count:

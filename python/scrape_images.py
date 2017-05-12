@@ -89,16 +89,15 @@ class ScrapeImages(object):
 				src = os.path.join(self.image_dir, i)
 				dst = os.path.join(out_dir, i)
 				if os.path.isfile(src):
-					if len(self.thumbnail_sizes) is not 0:
-							for tb in range(len(self.thumbnail_sizes)):
+					if self.thumbnail_sizes is not None:
+							for tb in self.thumbnail_sizes:
 								with Image.open(src) as img:
 									width = self.thumbnail_sizes[tb]
 									size = (width, width)
 									img.thumbnail(size, Image.ANTIALIAS)
 									f, e = os.path.splitext(util.path_leaf(dst))
 									imgname = os.path.join(
-										out_dir,'{}-{}.jpg'.format(f, tb))
-									print '{} {}'.format(size, imgname)
+										out_dir,'{}{}.jpg'.format(f, tb))
 									img.save(imgname)
 									img.close()
 					else:
