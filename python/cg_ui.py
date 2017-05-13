@@ -17,7 +17,7 @@ FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
 
 import logger
 
-class CgGui(object, Frame):
+class CgUi(object, Frame):
 	ROOT_DIR = '.'
 	UI_DIR = 'ui'
 	IMG_DIR = os.path.join(UI_DIR,'images')
@@ -68,6 +68,16 @@ class CgGui(object, Frame):
 		self.img_list_file = ''
 		self.product_list_file = ''
 
+		# Create input folders if not already there
+		root_dir = os.path.abspath(os.path.join(os.getcwd(), ScrapeImages.ROOT_DIR))
+		image_dir = os.path.join(root_dir, ScrapeImages.INPUT_DIR)
+		csv_dir = os.path.join(root_dir, ReorderCsv.INPUT_DIR)
+		if not os.path.exists(image_dir):
+					os.makedirs(image_dir)
+		if not os.path.exists(csv_dir):
+			os.makedirs(csv_dir)
+
+		# Create UI
 		self.create_panel()
 
 	def create_panel(self):
@@ -296,7 +306,7 @@ class CgGui(object, Frame):
 			self.popup_err('ERROR: No csv file selected')
 
 if __name__ == "__main__":
-	CgGui().mainloop()
+	CgUi().mainloop()
 	for f in glob.glob("*.pyc"):
 		os.remove(f)
 
