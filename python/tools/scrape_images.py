@@ -16,7 +16,7 @@ FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
 
 
 class ScrapeImages(object):
-	ROOT_DIR = '..'
+	ROOT_DIR = '../..'
 	OUTPUT_DIR = 'parsed_images'
 	INPUT_DIR = 'images'
 	THUMBNAIL_DIR = 'thumbnails'

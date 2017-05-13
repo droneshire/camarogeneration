@@ -3,7 +3,7 @@ import os
 import sys
 import argparse
 
-INPUT_DIR = 'images'
+INPUT_DIR = '../../images'
 
 def erase(image_folder_dir, root_dir):
 	image_folder_dir = os.path.join(root_dir, image_folder_dir)

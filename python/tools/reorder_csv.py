@@ -9,10 +9,10 @@ import util
 
 
 class ReorderCsv(object):
-	ROOT_DIR = '..'
+	ROOT_DIR = '../..'
 	OUTPUT_DIR = 'converted_csvs'
 	INPUT_DIR = 'product_lists'
-	MASTER_FILE = '../master_product_list.csv'
+	MASTER_FILE = 'master_product_list.csv'
 
 	def __init__(self, input_file, target_filename, output=util.printf):
 		i = datetime.datetime.now()
@@ -24,6 +24,7 @@ class ReorderCsv(object):
 		self.outfile = os.path.join(self.root_dir, self.OUTPUT_DIR, out)
 		self.infile_name = input_file
 		self.targetfile = target_filename
+		self.output = output
 
 	def reorder(self):
 		util.printf('Opening {}...'.format(self.infile))
@@ -42,16 +43,16 @@ class ReorderCsv(object):
 				out_header = target_csv.next()[1:]
 				reordered_header = [r for r in target_csv if util.path_leaf(self.infile_name) in r]
 				if len(reordered_header) > 1:
-					self.fmt_out('ERROR: multiple csv files with same name ({})'.format(
+					self.output('ERROR: multiple csv files with same name ({})'.format(
 							self.infile_name))
 					sys.exit(1)
 				if len(reordered_header) == 0:
-					self.fmt_out('ERROR: no csv files with name {}'.format(self.infile_name))
+					self.output('ERROR: no csv files with name {}'.format(self.infile_name))
 					sys.exit(1)
 				reordered_header = reordered_header[0][1:]
 			ft.close()
 		except:
-			self.fmt_out('ERROR: Could not open {}'.format(self.targetfile))
+			self.output('ERROR: Could not open {}'.format(self.targetfile))
 			sys.exit(1)
 		try:
 			with open(self.infile, 'r') as fi, open(self.outfile, 'w') as fo:
@@ -64,7 +65,7 @@ class ReorderCsv(object):
 			fi.close()
 			fo.close()
 		except:
-			self.fmt_out('ERROR: Could not open {} or create {}'.format(
+			self.output('ERROR: Could not open {} or create {}'.format(
 						self.infile, self.outfile))
 			sys.exit(1)
 
@@ -74,7 +75,8 @@ if __name__ == "__main__":
 	parser.add_argument('-f', '--input_filename', nargs=1,
 						help='Filename to parse')
 	parser.add_argument('-t', '--target_filename', nargs=1,
-						help='Filename to match', default=[ReorderCsv.MASTER_FILE])
+						help='Filename to match', default=[os.path.join(
+							ReorderCsv.ROOT_DIR, ReorderCsv.MASTER_FILE)])
 	args = parser.parse_args()
 
 	root = os.path.abspath(os.path.join(os.getcwd(), ReorderCsv.ROOT_DIR))

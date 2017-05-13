@@ -20,12 +20,12 @@ import logger
 class CgUi(object, Frame):
 	ROOT_DIR = '.'
 	LOG_DIR = 'logs'
-	IMG_DIR = os.path.join(UI_DIR,'images')
-	LOGO = 'cg_logo.jpg'
+	IMG_DIR = 'images'
+	LOGO = 'logo.jpg'
 	THUMBNAILS = {'-0':0, '-1':0, '-2T':0, '-2':0}
 
 	def __init__(self):
-		log_dir = os.path.abspath(os.path.join(os.getcwd(),self.LOG_DIR)
+		log_dir = os.path.abspath(os.path.join(os.getcwd(),self.LOG_DIR))
 		if not os.path.exists(log_dir):
 					os.makedirs(log_dir)
 		LOG_FILE= os.path.join(log_dir, '{}.log'.format(__file__))
@@ -300,7 +300,8 @@ class CgUi(object, Frame):
 
 	def reorder_csv_handle(self):
 		if self.product_list_file:
-			masterfile = os.path.abspath(os.path.join(os.getcwd(), ReorderCsv.MASTER_FILE))
+			masterfile = os.path.abspath(os.path.join(
+				os.getcwd(), ReorderCsv.ROOT_DIR, ReorderCsv.MASTER_FILE))
 			err_count = self.err_count
 			ReorderCsv(self.product_list_file, masterfile, self.popup_err).reorder()
 			if err_count == self.err_count:
