@@ -19,13 +19,16 @@ import logger
 
 class CgUi(object, Frame):
 	ROOT_DIR = '.'
-	UI_DIR = 'ui'
+	LOG_DIR = 'logs'
 	IMG_DIR = os.path.join(UI_DIR,'images')
 	LOGO = 'cg_logo.jpg'
 	THUMBNAILS = {'-0':0, '-1':0, '-2T':0, '-2':0}
 
 	def __init__(self):
-		LOG_FILE= './logs/{}.log'.format(__file__)
+		log_dir = os.path.abspath(os.path.join(os.getcwd(),self.LOG_DIR)
+		if not os.path.exists(log_dir):
+					os.makedirs(log_dir)
+		LOG_FILE= os.path.join(log_dir, '{}.log'.format(__file__))
 		self.log = logger.get_logger(__file__, LOG_FILE)
 
 		Frame.__init__(self, name='camaro_gen_tool')
