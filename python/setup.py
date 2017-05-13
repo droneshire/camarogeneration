@@ -4,13 +4,12 @@ import sys
 import os
 
 # get the version included in the __init__
-import tools
+import cgtools
 
 folders = [
-        os.path.join('tools','images'),
         ]
 
-fnames = []
+fnames = [os.path.join('.','cgtools','images','logo.jpg'),]
 
 def remove_first_dir(path):
     allparts = []
@@ -49,7 +48,7 @@ for d in datafiles:
     print d
 
 setup(
-    name='cgtools',
+    name='cg-tools',
     version='1.0.0',
     author='Ross Yeager',
     author_email='ryeager.design@gmail.com',
