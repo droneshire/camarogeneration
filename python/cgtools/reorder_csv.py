@@ -9,7 +9,7 @@ import util
 
 
 class ReorderCsv(object):
-	ROOT_DIR = '../..'
+	ROOT_DIR = util.get_data_folder()
 	OUTPUT_DIR = 'converted_csvs'
 	INPUT_DIR = 'product_lists'
 	MASTER_FILE = 'master_product_list.csv'
@@ -19,9 +19,8 @@ class ReorderCsv(object):
 		f, e = os.path.splitext(util.path_leaf(input_file))
 		out = f + '_{}_{}_{}_{}_{}'.format(
 						  i.month, i.day, i.year, i.hour, i.minute) + e
-		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
 		self.infile = input_file
-		self.outfile = os.path.join(self.root_dir, self.OUTPUT_DIR, out)
+		self.outfile = os.path.join(self.ROOT_DIR, self.OUTPUT_DIR, out)
 		self.infile_name = input_file
 		self.targetfile = target_filename
 		self.output = output
@@ -33,7 +32,7 @@ class ReorderCsv(object):
 		out_header = []
 		reordered_header = []
 
-		out_dir = os.path.join(self.root_dir, self.OUTPUT_DIR)
+		out_dir = os.path.join(self.ROOT_DIR, self.OUTPUT_DIR)
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 
@@ -79,7 +78,6 @@ if __name__ == "__main__":
 							ReorderCsv.ROOT_DIR, ReorderCsv.MASTER_FILE)])
 	args = parser.parse_args()
 
-	root = os.path.abspath(os.path.join(os.getcwd(), ReorderCsv.ROOT_DIR))
-	infile = os.path.join(root, ReorderCsv.INPUT_DIR, args.input_filename[0])
+	infile = os.path.join(ReorderCsv.ROOT_DIR, ReorderCsv.INPUT_DIR, args.input_filename[0])
 
 	ReorderCsv(infile, args.target_filename[0]).reorder()

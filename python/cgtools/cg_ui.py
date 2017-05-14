@@ -89,6 +89,14 @@ class CgUi(object, Frame):
 
 		# create the notebook
 		nb = Notebook(panel, name='notebook')
+		menubar = Menu(panel)
+		filemenu = Menu(menubar, tearoff=0)
+		filemenu.add_command(label="Update Home Directory", command=self.update_home_dir)
+		filemenu.add_separator()
+		filemenu.add_command(label="Exit", command=self.master.quit)
+		menubar.add_cascade(label="File", menu=filemenu)
+		menubar.add_command(label="Help", command=self.display_help)
+		self.master.config(menu=menubar)
 
 		# extend bindings to top level window allowing
 		#   CTRL+TAB - cycles thru tabs
@@ -99,6 +107,28 @@ class CgUi(object, Frame):
 
 		self.create_image_tab(nb)
 		self.create_csv_process_tab(nb)
+
+
+	def update_home_dir(self):
+		hdir = Toplevel()
+		hdir.title('Set Home Directory')
+		hdir.focus_force()
+		util.SetHomeDir(hdir, hdir.destroy)
+
+	def display_help(self):
+		helpmsg = ''
+		with open('README.md', 'r') as f:
+			for l in f:
+				helpmsg += l
+		help = Toplevel()
+		help.title('Help')
+		help.focus_force()
+		l = Label(help, text=helpmsg,
+			wraplength=500, anchor=W, justify=LEFT)
+		l.grid(row=1, column=0)
+		cbtn = Button(help, text="OK", command=help.destroy, padding='5 5 5 5')
+		cbtn.grid(row=2 , column=0)
+
 
 	def create_image_tab(self, nb):
 		# frame to hold contentx
@@ -122,8 +152,8 @@ class CgUi(object, Frame):
 		fb = Button(frame, text='Setup FTP', command=self.set_ftp)
 		fb.grid(row=starting_row+2, column=starting_column+5, sticky = W + E, padx=5, pady=5)
 
-		cb = Button(frame, text="Close", command=self.master.quit)
-		cb.grid(row=starting_row+3 , column=starting_column+5, sticky = W + E, padx=5, pady=5)
+		# cb = Button(frame, text="Close", command=self.master.quit)
+		# cb.grid(row=starting_row+3 , column=starting_column+5, sticky = W + E, padx=5, pady=5)
 
 		# Image sizing
 		entry_width = 3
@@ -176,8 +206,8 @@ class CgUi(object, Frame):
 		self.cbutton1= Button(frame, text="Process Product List", command=self.reorder_csv_handle)
 		self.cbutton1.grid(row=starting_row+1, column=5, sticky = W+E, padx=5, pady=5)
 
-		self.close_button = Button(frame, text="Close", command=self.master.quit)
-		self.close_button.grid(row=starting_row+2 , column=5, sticky = W+E, padx=5, pady=5)
+		# self.close_button = Button(frame, text="Close", command=self.master.quit)
+		# self.close_button.grid(row=starting_row+2 , column=5, sticky = W+E, padx=5, pady=5)
 
 		frame.rowconfigure(1, weight=1)
 		frame.columnconfigure((0,1), weight=1, uniform=1)
@@ -218,7 +248,7 @@ class CgUi(object, Frame):
 		cbtn = Button(err, text="OK", command=err.destroy, padding='5 5 5 5')
 		cbtn.grid(row=2 , column=0)
 		popup = Label(err, text=err_msg,
-			wraplength=200, anchor=W, justify=CENTER)
+			wraplength=300, anchor=W, justify=CENTER)
 		popup.grid(row=1, column=0)
 		Label(err, text="").grid(row=3, column=0)
 		self.err_count +=1
@@ -231,7 +261,7 @@ class CgUi(object, Frame):
 		cbtn = Button(success, text="OK", command=success.destroy, padding='5 5 5 5')
 		cbtn.grid(row=2 , column=0)
 		self.popup = Label(success, text=msg,
-			wraplength=200, anchor=W, justify=CENTER)
+			wraplength=300, anchor=W, justify=CENTER)
 		self.popup.grid(row=1, column=0)
 		Label(success, text="").grid(row=3, column=0)
 		success.focus_force()

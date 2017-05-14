@@ -1,22 +1,21 @@
  #!/usr/bin/env python
+import argparse
+import csv
+import datetime
+import ftplib
 import os
 import sys
-import argparse
-import datetime
-import csv
-from shutil import copyfile
-import util
 import urllib
-import ftplib
+
 from PIL import Image
+from shutil import copyfile
 
 import erase_images
-
-FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
+import util
 
 
 class ScrapeImages(object):
-	ROOT_DIR = '../..'
+	ROOT_DIR = util.get_data_folder()
 	OUTPUT_DIR = 'parsed_images'
 	INPUT_DIR = 'images'
 	THUMBNAIL_DIR = 'thumbnails'
@@ -66,7 +65,7 @@ class ScrapeImages(object):
 	def parse_images(self):
 		i = datetime.datetime.now()
 		f, e = os.path.splitext(util.path_leaf(self.input_file))
-		out = f + '_{}_{}_{}_{}_{}_{}'.format(
+		image_output_filename = f + '_{}_{}_{}_{}_{}_{}'.format(
 						  i.month, i.day, i.year, i.hour, i.minute, i.second)
 
 		parsed_dir = os.path.join(self.root_dir, self.OUTPUT_DIR)
@@ -74,14 +73,14 @@ class ScrapeImages(object):
 		if not os.path.exists(parsed_dir):
 			os.makedirs(parsed_dir)
 
-		out_dir = os.path.join(parsed_dir, out)
-		if not os.path.exists(out_dir):
-			os.makedirs(out_dir)
+		image_output_dir = os.path.join(parsed_dir, image_output_filename)
+		if not os.path.exists(image_output_dir):
+			os.makedirs(image_output_dir)
 
 		util.printf('Computing image list from {}...'.format(self.input_file))
 		image_list = self.get_images(self.input_file)
 		util.printf('Searching for {} images in {}...'.format(len(image_list), self.image_dir))
-		util.printf('Saving to {}...'.format(out_dir))
+		util.printf('Saving to {}...'.format(image_output_dir))
 
 		img_found = 0
 		missing = []
@@ -89,13 +88,13 @@ class ScrapeImages(object):
 		if os.path.exists(self.image_dir):
 			for i in image_list:
 				src = os.path.join(self.image_dir, i)
-				dst = os.path.join(out_dir, i)
+				dst = os.path.join(image_output_dir, i)
 				if os.path.isfile(src):
 					if self.do_copy_original:
 						copyfile(src, dst)
 
 					if self.thumbnail_sizes is not None:
-						t_dir = os.path.join(out_dir, self.THUMBNAIL_DIR)
+						t_dir = os.path.join(image_output_dir, self.THUMBNAIL_DIR)
 						if not os.path.exists(t_dir):
 							os.makedirs(t_dir)
 
@@ -131,7 +130,7 @@ class ScrapeImages(object):
 
 			# remove directory if nothing was placed in it
 			try:
-				os.rmdir(out_dir)
+				os.rmdir(image_output_dir)
 			except:
 				pass
 
@@ -158,12 +157,12 @@ if __name__ == "__main__":
 	session = None
 	if args.upload_ftp:
 		try:
-			util.printf('Connecting to {}...'.format(FTP_SERVER_ADDR))
+			f = raw_input('Enter ftp address: ')
 			l = raw_input('Enter ftp login: ')
 			p = raw_input('Enter ftp password: ')
-			session = ftplib.FTP(FTP_SERVER_ADDR, p, l)
+			session = ftplib.FTP(f, p, l)
 		except:
-			util.printf('Could not connect to {}'.format(FTP_SERVER_ADDR))
+			util.printf('Could not connect to {}'.format(f))
 			sys.exit(1)
 		util.printf('Connected')
 
