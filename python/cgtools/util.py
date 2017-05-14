@@ -6,6 +6,8 @@ import sys
 import os
 import glob
 
+FILE_NAME = 'homedir.txt'
+
 def default_root_dir():
 	root_dir = os.path.join(os.path.expanduser('~'), 'cgtools')
 	if not os.path.exists(root_dir):
@@ -14,7 +16,7 @@ def default_root_dir():
 
 def get_data_folder():
 	root_dir = default_root_dir()
-	dir_file = os.path.join(root_dir, SetHomeDir.FILE_NAME)
+	dir_file = os.path.join(root_dir, FILE_NAME)
 	home_dir = ''
 	if os.path.isfile(dir_file):
 		with open(dir_file, 'r') as f:
@@ -41,7 +43,7 @@ def rename_jpgs(path):
 		os.system('mv {} {}'.format(file, newname[0] + '.jpg'))
 
 class SetHomeDir(object, Frame):
-	FILE_NAME = 'homedir.txt'
+
 	def __init__(self, parent, exit_callback):
 		Frame.__init__(self, parent)
 		self.dir_var = StringVar()
@@ -58,7 +60,7 @@ class SetHomeDir(object, Frame):
 		cbtn.pack(side=BOTTOM,padx=5, pady=5)
 
 	def update_root_dir(self):
-		file = os.path.join(default_root_dir(), self.FILE_NAME)
+		file = os.path.join(default_root_dir(), FILE_NAME)
 		with open(file, 'w') as f:
 			if self.home_dir is not None:
 				f.write(self.home_dir)

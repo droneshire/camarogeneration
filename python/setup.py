@@ -1,15 +1,16 @@
 from setuptools import setup, find_packages
+from Tkinter import *
 import subprocess
 import sys
 import os
 
 # get the version included in the __init__
-import cgtools
+import cgtools.util
 
 folders = [
         ]
 
-fnames = [os.path.join('.','cgtools','images','logo.jpg'),]
+fnames = [os.path.join('cgtools','ui_images','logo.jpg'),]
 
 def remove_first_dir(path):
     allparts = []
@@ -26,7 +27,11 @@ def remove_first_dir(path):
             allparts.insert(0, parts[1])
     return os.path.join(*allparts[1:])
 
-datafiles_dir = os.path.join(os.path.expanduser('~'), 'datafiles')
+root = Tk()
+root.title('Home Directory Util')
+cgtools.util.SetHomeDir(root, root.quit).mainloop()
+
+datafiles_dir = cgtools.util.get_data_folder()
 ret = {}
 for folder in folders:
     for d, _, files in os.walk(folder):

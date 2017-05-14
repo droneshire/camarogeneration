@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 from Tkinter import *
 from ttk import *
 from PIL import ImageTk, Image
@@ -13,19 +12,17 @@ from scrape_images import ScrapeImages
 import erase_images
 import util
 
-FTP_SERVER_ADDR = 'gmqjl.sgamh.servertrust.com'
-
 import logger
 
 class CgUi(object, Frame):
-	ROOT_DIR = '.'
+	ROOT_DIR = util.get_data_folder()
 	LOG_DIR = 'logs'
-	IMG_DIR = 'images'
+	IMG_DIR = 'ui_images'
 	LOGO = 'logo.jpg'
 	THUMBNAILS = {'-0':0, '-1':0, '-2T':0, '-2':0}
 
 	def __init__(self):
-		log_dir = os.path.abspath(os.path.join(os.getcwd(),self.LOG_DIR))
+		log_dir = os.path.join(util.default_root_dir(), self.LOG_DIR)
 		if not os.path.exists(log_dir):
 					os.makedirs(log_dir)
 		LOG_FILE= os.path.join(log_dir, '{}.log'.format(__file__))
