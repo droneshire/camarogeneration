@@ -12,6 +12,7 @@ folders = [
 
 fnames = [os.path.join('cgtools','README.md'),
           os.path.join('cgtools','ui_images','logo.jpg'),
+	  os.path.join('cgtools','cg_tools.bat'),
          ]
 
 def remove_first_dir(path):

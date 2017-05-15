@@ -1,2 +1,3 @@
 include cgtools/ui_images/*.jpg
 include cgtools/README.md
+include cgtools/cg_tools.bat
