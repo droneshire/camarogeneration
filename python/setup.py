@@ -3,6 +3,7 @@ from Tkinter import *
 import subprocess
 import sys
 import os
+from shutil import copyfile
 
 # get the version included in the __init__
 import cgtools.util
@@ -12,7 +13,7 @@ folders = [
 
 fnames = [os.path.join('cgtools','README.md'),
           os.path.join('cgtools','ui_images','logo.jpg'),
-	  os.path.join('cgtools','cg_tools.bat'),
+	      os.path.join('cgtools','cg_tools.bat'),
          ]
 
 def remove_first_dir(path):
@@ -65,6 +66,6 @@ setup(
     packages=find_packages(),
     data_files=datafiles,
     entry_points={
-        'console_scripts': []
+        'console_scripts': ['install-shortcuts = cgtools.install_shortcuts:main',]
     }
 )

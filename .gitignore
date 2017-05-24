@@ -8,4 +8,4 @@ logs
 marketing
 dist
 python-2.7.13.amd64.msi
-
+*.xlsx

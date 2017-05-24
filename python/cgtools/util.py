@@ -24,7 +24,6 @@ def get_data_folder():
 				home_dir = line
 			if os.path.exists(home_dir):
 				root_dir = home_dir
-	print root_dir
 	return root_dir
 
 
@@ -62,6 +61,7 @@ class SetHomeDir(object, Frame):
 	def update_root_dir(self):
 		file = os.path.join(default_root_dir(), FILE_NAME)
 		with open(file, 'w') as f:
+			print 'Updating root dir: '
 			if self.home_dir is not None:
 				f.write(self.home_dir)
 				print self.home_dir
