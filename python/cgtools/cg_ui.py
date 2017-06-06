@@ -321,7 +321,6 @@ class CgUi(object, Frame):
 				print 'None'
 			else:
 				thumbnail_sizes = self.THUMBNAILS
-				print self.THUMBNAILS
 			ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.do_copy_original.get(),
 				self.do_copy_pdf.get(), self.session, self.popup_err, thumbnail_sizes).parse_images()
 			if err_count == self.err_count:
