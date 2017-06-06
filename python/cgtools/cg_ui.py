@@ -43,6 +43,7 @@ class CgUi(object, Frame):
 		self.pfile_var = StringVar()
 		self.do_erase = IntVar()
 		self.do_copy_original = IntVar()
+		self.do_copy_pdf = IntVar()
 		self.size0 = IntVar()
 		self.size1 = IntVar()
 		self.size2t = IntVar()
@@ -158,7 +159,10 @@ class CgUi(object, Frame):
 		rb = Checkbutton(frame, text='Erase Images', variable=self.do_erase)
 		rb.grid(row=starting_row+1, column=starting_column+3, sticky=W, padx=5, pady=5,columnspan=2)
 		rb = Checkbutton(frame, text='Include Original', variable=self.do_copy_original)
-		rb.grid(row=starting_row+1, column=starting_column+1, sticky=E, padx=5, pady=5,columnspan=2)
+		rb.grid(row=starting_row+1, column=starting_column+1, padx=5, pady=5,columnspan=2)
+		rb = Checkbutton(frame, text='Include PDF', variable=self.do_copy_pdf)
+		rb.grid(row=starting_row+1, column=starting_column, sticky=E, padx=5, pady=5,columnspan=1)
+
 
 
 		image_sizing_row_start = starting_row+2
@@ -319,7 +323,7 @@ class CgUi(object, Frame):
 				thumbnail_sizes = self.THUMBNAILS
 				print self.THUMBNAILS
 			ScrapeImages(self.img_list_file, imgdir, self.do_erase.get(), self.do_copy_original.get(),
-				self.session, self.popup_err, thumbnail_sizes).parse_images()
+				self.do_copy_pdf.get(), self.session, self.popup_err, thumbnail_sizes).parse_images()
 			if err_count == self.err_count:
 				self.popup_success('SUCCESS: Images parsed')
 		else:

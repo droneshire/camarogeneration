@@ -29,9 +29,10 @@ class ScrapeImages(object):
 	FTP_IMG_DIR = 'product_images'
 
 	def __init__(self, input_file, image_dir, erase_imgs=False, do_copy_original=True,
-				 ftp_session=None, output=util.printf, thumbnail_sizes=None):
+				 do_copy_pdf=False, ftp_session=None, output=util.printf, thumbnail_sizes=None):
 		self.do_erase = erase_imgs
 		self.do_copy_original = do_copy_original
+		self.do_copy_pdf = do_copy_pdf
 
 		self.input_file = input_file
 		self.root_dir = os.path.abspath(os.path.join(os.getcwd(), self.ROOT_DIR))
@@ -78,7 +79,7 @@ class ScrapeImages(object):
 			os.makedirs(image_output_dir)
 
 		util.printf('Computing image list from {}...'.format(self.input_file))
-		image_list = self.get_images(self.input_file)
+		image_list = list(set(self.get_images(self.input_file)))
 		util.printf('Searching for {} images in {}...'.format(len(image_list), self.image_dir))
 		util.printf('Saving to {}...'.format(image_output_dir))
 
@@ -88,6 +89,7 @@ class ScrapeImages(object):
 		if os.path.exists(self.image_dir):
 			for i in image_list:
 				src = os.path.join(self.image_dir, i)
+				src_pdf = os.path.splitext(src)[0] + '.pdf'
 				dst = os.path.join(image_output_dir, i)
 				if os.path.isfile(src):
 					if self.do_copy_original:
@@ -111,7 +113,14 @@ class ScrapeImages(object):
 					else:
 						copyfile(src, dst)
 
-					util.printf('Found image {}...'.format(i))
+					if self.do_copy_pdf:
+						if os.path.isfile(src_pdf):
+							copyfile(src_pdf, dst)
+							util.printf('Found image {} and PDF...'.format(i))
+						else:
+							util.printf('Found image {}...'.format(i))
+
+
 					img_found += 1
 					if self.session is not None:
 						f = open(src, 'rb')
