@@ -6,6 +6,7 @@ import ftplib
 import os
 import sys
 import urllib
+import urllib2
 
 from PIL import Image
 from shutil import copyfile
@@ -43,6 +44,30 @@ class ScrapeImages(object):
 		self.fmt_out = output
 		self.thumbnail_sizes = thumbnail_sizes
 
+	def check_for_download(self, row, name):
+		""" check to see if we should download any images from this row """
+		download_image_increment = 0
+		images = []
+		for val in row:
+			if not val.startswith('http'):
+				continue
+			download_img = name
+			if download_image_increment:
+				download_img += '_' + str(download_image_increment)
+			download_img += self.IMG_EXTENSION
+			save_file = os.path.join(self.image_dir, download_img)
+			images.append(download_img)
+			download_image_increment += 1
+			
+			if os.path.isfile(save_file):
+				util.printf('Already downloaded {}, skipping...'.format(download_img))
+				continue
+			response = urllib2.urlopen(val)
+			util.printf('Downloading {}...'.format(download_img))
+			with open(save_file, 'w') as outfile:
+				outfile.write(response.read())
+		return images
+
 	def get_images(self, csvfile):
 		images = []
 		try:
@@ -55,8 +80,14 @@ class ScrapeImages(object):
 					self.fmt_out('ERROR: {} needs image list in column "{}"'.format(
 							csvfile, self.IMAGE_COLUMN_NAME))
 					return []
-				for r in reader:
-					images.append(r[0] + self.IMG_EXTENSION)
+				for row in reader:
+					image_names = []
+					downloads = self.check_for_download(row, row[c])
+					if len(downloads):
+						image_names.extend(downloads)
+					else:
+						image_names.append([row[c] + self.IMG_EXTENSION])
+					images.extend(image_names)
 			f.close()
 			return images
 		except:

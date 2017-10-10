@@ -70,13 +70,13 @@ class CgUi(object, Frame):
 		self.product_list_file = ''
 
 		# Create input folders if not already there
+		dirs = []
 		root_dir = os.path.abspath(os.path.join(os.getcwd(), ScrapeImages.ROOT_DIR))
-		image_dir = os.path.join(root_dir, ScrapeImages.INPUT_DIR)
-		csv_dir = os.path.join(root_dir, ReorderCsv.INPUT_DIR)
-		if not os.path.exists(image_dir):
-					os.makedirs(image_dir)
-		if not os.path.exists(csv_dir):
-			os.makedirs(csv_dir)
+		dirs.append(os.path.join(root_dir, ScrapeImages.INPUT_DIR))
+		dirs.append(os.path.join(root_dir, ReorderCsv.INPUT_DIR))
+		dirs.append(os.path.join(root_dir, ScrapeImages.IMG_LIST_DIR))
+		for dir in dirs:
+			util.make_sure_path_exists(dir)
 
 		# Create UI
 		self.create_panel()

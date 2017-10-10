@@ -62,7 +62,7 @@ setup(
     author='Ross Yeager',
     author_email='ryeager.design@gmail.com',
     url='https://github.com/rossyeager/camarogeneration',
-    install_requires=['PIL'] ,
+    install_requires=['Pillow'] ,
     packages=find_packages(),
     data_files=datafiles,
     entry_points={

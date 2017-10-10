@@ -26,6 +26,9 @@ def get_data_folder():
 				root_dir = home_dir
 	return root_dir
 
+def make_sure_path_exists(directory):
+	if not os.path.exists(directory):
+		os.makedirs(directory)
 
 def printf(text):
 	sys.stdout.write(text)
