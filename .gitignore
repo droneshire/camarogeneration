@@ -9,3 +9,8 @@ marketing
 dist
 python-2.7.13.amd64.msi
 *.xlsx
+product_lists
+image_lists
+admin
+cg_website_volusion
+logo

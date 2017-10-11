@@ -64,7 +64,7 @@ class ScrapeImages(object):
 				continue
 			response = urllib2.urlopen(val)
 			util.printf('Downloading {}...'.format(download_img))
-			with open(save_file, 'w') as outfile:
+			with open(save_file, 'wb') as outfile:
 				outfile.write(response.read())
 		return images
 
@@ -81,12 +81,16 @@ class ScrapeImages(object):
 							csvfile, self.IMAGE_COLUMN_NAME))
 					return []
 				for row in reader:
+					# make sure we actually have an image name
+					if row[c] == '':
+						continue
+
 					image_names = []
 					downloads = self.check_for_download(row, row[c])
 					if len(downloads):
 						image_names.extend(downloads)
 					else:
-						image_names.append([row[c] + self.IMG_EXTENSION])
+						image_names.append(row[c] + self.IMG_EXTENSION)
 					images.extend(image_names)
 			f.close()
 			return images
