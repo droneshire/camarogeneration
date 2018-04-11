@@ -1,6 +1,10 @@
 # Camaro Generation Tools
 File management and image parsing.
 
+1) Clone project.
+2) Go to the python folder
+3) Run `sudo python setup.py install`
+
 ## To Reorder a CSV File:
 1) Open master_product_list.csv
 
